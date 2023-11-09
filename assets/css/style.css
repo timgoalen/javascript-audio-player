@@ -1,0 +1,75 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap');
+
+body {
+    font-family: 'Poppins', sans-serif;
+}
+
+#audio-player {
+    border: 1px solid #989898;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 550px;
+    margin: auto;
+}
+
+#visualiser,
+#controls {
+    border-top: 1px solid #989898;
+}
+
+.track {
+    padding: 0.3rem;
+    border-bottom: 1px solid #989898;
+}
+
+.track-title {
+    font-size: 1rem;
+}
+
+.track-album {
+    font-size: 0.7rem;
+}
+
+.active-track {
+    color: #EC0404;
+}
+
+#controls {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+}
+
+#controls-btns {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+#controls-timeline {
+    display: flex;
+    flex-direction: column;
+    margin: 0.5rem;
+}
+
+#slider {
+    width: 100%;
+}
+
+#times {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    font-size: 0.8rem;
+}
+
+#track-back-btn,
+#track-forward-btn {
+    font-size: 1.5rem;
+    color: #989898;
+}
+
+#track-play-btn {
+    font-size: 2.5rem;
+    color: #a5d2ec;
+}

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <title>JavaScript Audio Player</title>
+</head>
+
+<body>
+    <section id="audio-player">
+        <div id="track-list">
+            <div class="track">
+                <div class="track-title">
+                    Fanfare
+                </div>
+                <div class="track-album">
+                    Running with the Devil: The Wild World of John McAfee
+                </div>
+            </div>
+            <div class="track">
+                <div class="track-title">
+                    End Credits
+                </div>
+                <div class="track-album">
+                    Running with the Devil: The Wild World of John McAfee
+                </div>
+            </div>
+            <div class="track active-track">
+                <div class="track-title">
+                    The Race
+                </div>
+                <div class="track-album">
+                    Driven: The Billy Monger Story
+                </div>
+            </div>
+            <div class="track">
+                <div class="track-title">
+                    Like a Rock Star
+                </div>
+                <div class="track-album">
+                    Paula
+                </div>
+            </div>
+            <div class="track">
+                <div class="track-title">
+                    Like a Rock Star
+                </div>
+                <div class="track-album">
+                    Paula
+                </div>
+            </div>
+            <div class="track">
+                <div class="track-title">
+                    Gemsbok Chase
+                </div>
+                <div class="track-album">
+                    Animals with Cameras
+                </div>
+            </div>
+            <div class="track">
+                <div class="track-title">
+                    Birth
+                </div>
+                <div class="track-album">
+                    Chris Packham: 7.7 Billion People and Counting
+                </div>
+            </div>
+            <div class="track">
+                <div class="track-title">
+                    Prelude
+                </div>
+                <div class="track-album">
+                    Being Frank: The Frank Gardner Story
+                </div>
+            </div>
+        </div>
+
+        <div id="visualiser">
+
+        </div>
+
+        <div id="controls">
+            <div id="controls-timeline">
+                <div id="slider">
+                    <input type="range" min="1" max="100" value="20" id="slider">
+                </div>
+                <div id="times">
+                    <div>00:00</div>
+                    <div>03:30</div>
+                </div>
+            </div>
+            <div id="controls-btns">
+                <div id="track-back-btn">
+                    <i class="fa-solid fa-backward-step"></i>
+                </div>
+                <div id="track-play-btn">
+                    <i class="fa-regular fa-circle-play"></i>
+                </div>
+                <div id="track-forward-btn">
+                    <i class="fa-solid fa-forward-step"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Font Awesome script -->
+    <script src="https://kit.fontawesome.com/1898f2e833.js" crossorigin="anonymous"></script>
+    <!-- JS script -->
+    <script src="assets/js/audio-player.js"></script>
+</body>
+
+</html>
