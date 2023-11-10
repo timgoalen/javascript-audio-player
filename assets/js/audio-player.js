@@ -45,21 +45,24 @@ const trackList = [{
 
 const playBtn = document.getElementById("track-play-btn");
 const trackListContainer = document.getElementById("track-list");
+const trackPositionSlider = document.getElementById("track-position-slider");
 const trackBackBtn = document.getElementById("track-back-btn");
 const trackForwardBtn = document.getElementById("track-forward-btn");
-const duration = document.getElementById("duration");
+const durationField = document.getElementById("duration-counter");
+const progressField = document.getElementById("progress-counter");
 
 let audioIsPlaying = false;
 let trackPlayingIndex = 0;
 
 let audio = document.createElement("audio");
+// Load first track in array
 audio.src = trackList[0].src;
 audio.load();
 
 function loadTrackInfo() {
     for (const track of trackList) {
         const trackHtml = `
-        <div class="track" data-src="${track.src}" data-index="${track.index}">
+        <div class="track" data-src="${track.src}" data-index="${track.index}" id="track${track.index}">
             <div class="track-title">${track.title}</div>
             <div class="track-album">${track.album}</div>
         </div>
@@ -68,9 +71,12 @@ function loadTrackInfo() {
     }
 }
 
+// Populate DOM with track info
 loadTrackInfo();
 
 const trackDivs = Array.from(document.getElementsByClassName("track"));
+
+// -- UTILITY FUNCTIONS --
 
 function removeAllActiveClass() {
     trackDivs.forEach(div => {
@@ -78,36 +84,43 @@ function removeAllActiveClass() {
     })
 }
 
+function changePlayToPauseBtn() {
+    playBtn.innerHTML = `<i class="fa-solid fa-pause"></i>`;
+}
+
+function changePauseToPlayBtn() {
+    playBtn.innerHTML = `<i class="fa-solid fa-play"></i>`;
+}
+
+function formatSeconds(seconds) {
+    if (seconds < 10) {
+        return `0${seconds}`;
+    } else {
+        return seconds;
+    }
+}
+
 trackDivs.forEach(div => {
     div.addEventListener("click", () => {
         const trackSrc = div.dataset.src;
         const selectedTrackIndex = div.dataset.index;
+        // If there's no music playing:
         if (!audioIsPlaying) {
             audio.src = trackSrc;
             audio.load();
             audio.play();
-            // duration.textContent = audio.duration;
-            let duration = audio.duration
-            console.log({
-                duration
-            })
             audioIsPlaying = true;
             trackPlayingIndex = selectedTrackIndex;
-            console.log({
-                selectedTrackIndex
-            })
-            console.log({
-                trackPlayingIndex
-            })
             removeAllActiveClass();
             div.classList.add("active-track");
             changePlayToPauseBtn();
         } else {
-            let source = audio.src;
+            // If there is music playing:
+            // Get the src of what is playing
+            const source = audio.src;
             // Use 'includes' because src has full domain address
             if (source.includes(trackSrc)) {
                 audio.pause();
-                removeAllActiveClass();
                 audioIsPlaying = false;
                 changePauseToPlayBtn();
             } else {
@@ -123,14 +136,6 @@ trackDivs.forEach(div => {
         }
     });
 });
-
-function changePlayToPauseBtn() {
-    playBtn.innerHTML = `<i class="fa-solid fa-pause"></i>`;
-}
-
-function changePauseToPlayBtn() {
-    playBtn.innerHTML = `<i class="fa-solid fa-play"></i>`;
-}
 
 playBtn.addEventListener("click", () => {
     if (audioIsPlaying) {
@@ -165,6 +170,40 @@ trackBackBtn.addEventListener("click", () => {
     }
 })
 
+// Time display
+
+function displayTimeRemaining() {
+    const trackDuration = audio.duration;
+    const trackProgress = audio.currentTime;
+    const timeRemaining = trackDuration - trackProgress;
+    const timeRemainingInMinutes = Math.floor(timeRemaining / 60);
+    const timeRemainingInSeconds = Math.floor(timeRemaining % 60);
+    durationField.textContent = `0${timeRemainingInMinutes}:${formatSeconds(timeRemainingInSeconds)}`;
+}
+
+function displayCurrentTime() {
+    const currentTime = audio.currentTime;
+    const currentTimeInMinutes = Math.floor(currentTime / 60);
+    const currentTimeInSeconds = Math.floor(currentTime % 60);
+    progressField.textContent = `0${currentTimeInMinutes}:${formatSeconds(currentTimeInSeconds)}`;
+}
+
+// Slider display & functionality
+
+function updateProgressSlider() {
+    const progress = (audio.currentTime / audio.duration) * 100;
+    trackPositionSlider.value = progress;
+}
+
+function skipToSelectedTime() {
+    const chosenPosition = trackPositionSlider.value;
+    const totalDuration = audio.duration;
+    const skipToTime = (chosenPosition / 100) * totalDuration;
+    audio.currentTime = skipToTime;
+}
+
+// UI Player Buttons
+
 trackForwardBtn.addEventListener("click", () => {
     if (trackPlayingIndex == 6) {
         return
@@ -173,9 +212,6 @@ trackForwardBtn.addEventListener("click", () => {
         changePlayToPauseBtn();
     }
     const skipForwardTrack = ++trackPlayingIndex;
-    console.log({
-        skipForwardTrack
-    })
     audio.src = trackList[skipForwardTrack].src;
     trackPlayingIndex = skipForwardTrack;
     audio.load();
@@ -186,3 +222,33 @@ trackForwardBtn.addEventListener("click", () => {
     currentTrack.classList.add("active-track");
 
 })
+
+// needed??:
+audio.addEventListener("loadedmetadata", () => {
+    updateTimeFields();
+});
+
+function updateTimeFields() {
+    audio.addEventListener("timeupdate", () => {
+        displayTimeRemaining();
+        displayCurrentTime();
+        updateProgressSlider();
+    });
+}
+
+trackPositionSlider.addEventListener("input", skipToSelectedTime);
+
+function autoPlayNextTrack() {
+    if (trackPlayingIndex < trackList.length - 1) {
+        trackPlayingIndex++;
+        audio.src = trackList[trackPlayingIndex].src;
+        audio.load();
+        audio.play();
+        audioIsPlaying = true;
+        removeAllActiveClass();
+        const nextTrack = document.getElementById(`track${trackPlayingIndex}`);
+        nextTrack.classList.add("active-track");
+    }
+}
+
+audio.addEventListener("ended", autoPlayNextTrack)
