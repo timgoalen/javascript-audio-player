@@ -253,3 +253,18 @@ function autoPlayNextTrack() {
 }
 
 audio.addEventListener("ended", autoPlayNextTrack)
+
+// Space bar to stop and start
+document.addEventListener("keydown", (event) => {
+    if (event.code === "Space" || event.key === " ") {
+      if (!audioIsPlaying) {
+        audio.play();
+        audioIsPlaying = true;
+        changePlayToPauseBtn();
+      } else {
+        audio.pause();
+        audioIsPlaying = false;
+        changePauseToPlayBtn();
+      }
+    }
+  });
