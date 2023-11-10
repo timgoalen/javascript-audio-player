@@ -129,7 +129,7 @@ function changePlayToPauseBtn() {
 }
 
 function changePauseToPlayBtn() {
-    playBtn.innerHTML = `<i class="fa-regular fa-circle-play"></i>`;
+    playBtn.innerHTML = `<i class="fa-solid fa-play"></i>`;
 }
 
 playBtn.addEventListener("click", () => {

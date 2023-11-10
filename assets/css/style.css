@@ -14,7 +14,7 @@ body {
 
 #visualiser,
 #controls {
-    border-top: 1px solid #989898;
+    /* border-top: 1px solid #989898; */
 }
 
 .track {
@@ -23,11 +23,11 @@ body {
 }
 
 .track-title {
-    font-size: 1rem;
+    font-size: 1.1rem;
 }
 
 .track-album {
-    font-size: 0.7rem;
+    font-size: 0.8rem;
 }
 
 .active-track {
@@ -52,9 +52,40 @@ body {
     margin: 0.5rem;
 }
 
-#slider {
-    width: 100%;
+#track-position-slider {
+    width: 99%;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    height: 0.3rem;
+    outline: 1px solid #989898;
+    border-radius: 4px;
+    z-index: 1;
 }
+
+#track-position-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 13px;
+  height: 13px;
+  background: white;
+  outline: 2px solid #EC0404;
+  cursor: pointer;
+  border-radius: 50%;
+  z-index: 999;
+}
+
+#track-position-slider::before {
+    content: '';
+    display: block;
+    height: 5px;
+    /* width: 100%; */
+    position: absolute;
+    background: #e74c3c; /* Color for the active portion */
+    border-radius: 5px;
+    z-index: 1;
+  }
 
 #times {
     display: flex;
@@ -70,6 +101,6 @@ body {
 }
 
 #track-play-btn {
-    font-size: 2.5rem;
-    color: #a5d2ec;
+    font-size: 2.7rem;
+    color: #58b7ef;
 }
