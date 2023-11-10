@@ -109,6 +109,7 @@ trackDivs.forEach(div => {
             audio.src = trackSrc;
             audio.load();
             audio.play();
+            initVisualizer();
             audioIsPlaying = true;
             trackPlayingIndex = selectedTrackIndex;
             removeAllActiveClass();
@@ -143,8 +144,8 @@ playBtn.addEventListener("click", () => {
         changePauseToPlayBtn();
         audioIsPlaying = false;
     } else {
-        // audio.src = 
         audio.play();
+        initVisualizer();
         changePlayToPauseBtn();
         audioIsPlaying = true;
         const firstTrack = trackDivs[0];
