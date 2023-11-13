@@ -5,27 +5,18 @@ body {
 }
 
 #audio-player {
-    /* border: 1px solid #989898; */
     border-radius: 12px;
     width: 100%;
     max-width: 400px;
     margin: auto;
-    /* -webkit-box-shadow: 1px 1px 1px 0px #000000; */
-    /* box-shadow: 4px 4px 3px 0px rgba(0,0,0,0.1); */
-    /* box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15); */
-    /* box-shadow: 40px 40px 97px #cccccc, -40px -40px 97px #ffffff; */
-    background: linear-gradient(145deg, #ffffff, #eeeeee8a);
+    background: linear-gradient(145deg, #ffffff, #eeeeee24);
     box-shadow: 40px 40px 97px #cccccc, -40px -40px 97px #ffffff;
-}
-
-#visualiser,
-#controls {
-    /* border-top: 1px solid #989898; */
 }
 
 .track {
     padding: 0.3rem;
     border-bottom: 1px solid #989898;
+    cursor: pointer;
 }
 
 .track-title {
@@ -44,11 +35,6 @@ body {
 #canvas {
     width: 100%;
     height: 3.5rem;
-}
-
-#controls {
-    /* display: grid; */
-    /* grid-template-rows: 1fr 1fr; */
 }
 
 #controls-btns {
@@ -71,47 +57,45 @@ body {
     height: 0.3rem;
     outline: 1px solid #989898;
     border-radius: 4px;
+    cursor: pointer;
     z-index: 1;
 }
 
 #track-position-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  width: 13px;
-  height: 13px;
-  background: white;
-  outline: 2px solid #EC0404;
-  cursor: pointer;
-  border-radius: 50%;
-  z-index: 999;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    background: white;
+    outline: 2px solid #EC0404;
+    cursor: pointer;
+    border-radius: 50%;
+    z-index: 999;
 }
-
-#track-position-slider::before {
-    content: '';
-    display: block;
-    height: 5px;
-    /* width: 100%; */
-    position: absolute;
-    background: #e74c3c; /* Color for the active portion */
-    border-radius: 5px;
-    z-index: 1;
-  }
 
 #times {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     font-size: 0.8rem;
+    cursor: default;
 }
 
 #track-back-btn,
 #track-forward-btn {
     font-size: 1.5rem;
-    color: #989898;
+    color: #58b7ef;
 }
 
 #track-play-btn {
     font-size: 2.7rem;
     color: #58b7ef;
+}
+
+#track-back-btn:hover,
+#track-forward-btn:hover,
+#track-play-btn:hover {
+    color: #1595E0;
+    cursor: pointer;
 }
