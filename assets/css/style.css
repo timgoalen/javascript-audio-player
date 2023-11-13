@@ -2,6 +2,9 @@
 
 body {
     font-family: 'Poppins', sans-serif;
+    height: 100vh;
+    display: grid;
+    place-items: center;;
 }
 
 #audio-player {

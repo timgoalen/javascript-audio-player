@@ -40,9 +40,9 @@ const trackList = [{
         src: "assets/audio/prelude-being-frank.mp3",
         index: 6
     },
-]
+];
 
-// GLOBAL CONSTANTS
+// -- GLOBAL CONSTANTS --
 
 const playBtn = document.getElementById("track-play-btn");
 const trackListContainer = document.getElementById("track-list");
@@ -52,17 +52,15 @@ const trackForwardBtn = document.getElementById("track-forward-btn");
 const durationField = document.getElementById("duration-counter");
 const progressField = document.getElementById("progress-counter");
 
-// GLOBAL VARIABLES
+// -- GLOBAL VARIABLES --
 
 let audioIsPlaying = false;
 let trackPlayingIndex = 0;
 
+// Create the audio element
 let audio = document.createElement("audio");
-// Load first track in trackList array
-audio.src = trackList[0].src;
-audio.load();
 
-// PAGE SETUP
+// -- PAGE SETUP --
 
 function loadTrackInfo() {
     for (const track of trackList) {
@@ -71,7 +69,7 @@ function loadTrackInfo() {
             <div class="track-title">${track.title}</div>
             <div class="track-album">${track.album}</div>
         </div>
-        `
+        `;
         trackListContainer.innerHTML += trackHtml;
     }
 }
@@ -88,11 +86,11 @@ function removeAllActiveClass() {
     }
 }
 
-function changePlayToPauseBtn() {
+function changePlayToPauseIcon() {
     playBtn.innerHTML = `<i class="fa-solid fa-pause"></i>`;
 }
 
-function changePauseToPlayBtn() {
+function changePauseToPlayIcon() {
     playBtn.innerHTML = `<i class="fa-solid fa-play"></i>`;
 }
 
@@ -104,29 +102,124 @@ function formatSeconds(seconds) {
     }
 }
 
-// Time display
+// -- MAIN FUNCTIONS --
+
+function playAudio(src) {
+    audio.src = src;
+    audio.load();
+    audio.play();
+    audioIsPlaying = true;
+}
+
+function pauseAudio() {
+    audio.pause();
+    audioIsPlaying = false;
+}
+
+function updateUiToPlaying() {
+    changePlayToPauseIcon();
+    removeAllActiveClass();
+    trackDivs[trackPlayingIndex].classList.add("active-track");
+}
+
+function updateUiToPaused() {
+    changePauseToPlayIcon();
+}
+
+function checkIfTrackIsLoaded() {
+    if (audio.src) {
+        return;
+    } else {
+        // Load first track in trackList array
+        audio.src = trackList[0].src;
+        audio.load();
+    }
+}
+
+// -- CLICK HANDLERS --
+
+function playBtnClickHandler() {
+    if (audioIsPlaying) {
+        pauseAudio();
+        updateUiToPaused();
+    } else {
+        checkIfTrackIsLoaded();
+        audio.play();
+        audioIsPlaying = true;
+        updateUiToPlaying();
+    }
+}
+
+function handleTrackBackClick() {
+    if (trackPlayingIndex === 0) {
+        return;
+    }
+    --trackPlayingIndex;
+    const src = trackList[trackPlayingIndex].src;
+    playAudio(src);
+    updateUiToPlaying();
+}
+
+function handleTrackForwardClick() {
+    if (trackPlayingIndex == trackList.length - 1) {
+        return;
+    }
+    ++trackPlayingIndex;
+    const src = trackList[trackPlayingIndex].src;
+    playAudio(src);
+    updateUiToPlaying();
+}
+
+function trackDivClickHandler(index) {
+    const targetDivSrc = trackList[index].src;
+    if (!audioIsPlaying) {
+        trackPlayingIndex = parseInt(index);
+        playAudio(targetDivSrc);
+        updateUiToPlaying();
+    } else {
+        const currentTrackPlaying = audio.src;
+        // If selected track is playing
+        // (use 'includes' because full URL includes domain name)
+        if (currentTrackPlaying.includes(targetDivSrc)) {
+            pauseAudio();
+            updateUiToPaused();
+        } else {
+            trackPlayingIndex = parseInt(index);
+            playAudio(targetDivSrc);
+            updateUiToPlaying();
+        }
+    }
+}
+
+// Display 'time elapsed' & 'time remaining'
+
+function displayTimeElapsed() {
+    const currentTimeInMinutes = Math.floor(audio.currentTime / 60);
+    const currentTimeInSeconds = Math.floor(audio.currentTime % 60);
+    progressField.textContent = `0${currentTimeInMinutes}:${formatSeconds(currentTimeInSeconds)}`;
+}
 
 function displayTimeRemaining() {
-    const trackDuration = audio.duration;
-    const trackProgress = audio.currentTime;
-    const timeRemaining = trackDuration - trackProgress;
+    const timeRemaining = audio.duration - audio.currentTime;
     const timeRemainingInMinutes = Math.floor(timeRemaining / 60);
     const timeRemainingInSeconds = Math.floor(timeRemaining % 60);
     durationField.textContent = `0${timeRemainingInMinutes}:${formatSeconds(timeRemainingInSeconds)}`;
 }
 
-function displayCurrentTime() {
-    const currentTime = audio.currentTime;
-    const currentTimeInMinutes = Math.floor(currentTime / 60);
-    const currentTimeInSeconds = Math.floor(currentTime % 60);
-    progressField.textContent = `0${currentTimeInMinutes}:${formatSeconds(currentTimeInSeconds)}`;
+function updateTimeFields() {
+    displayTimeElapsed();
+    displayTimeRemaining();
+    updateProgressSlider();
 }
 
 // Slider display & functionality
 
 function updateProgressSlider() {
-    const progress = (audio.currentTime / audio.duration) * 100;
-    trackPositionSlider.value = progress;
+    audio.addEventListener("loadedmetadata", () => {
+        const progress = (audio.currentTime / audio.duration) * 100;
+        trackPositionSlider.value = progress;
+    });
+
 }
 
 function skipToSelectedTime() {
@@ -136,120 +229,7 @@ function skipToSelectedTime() {
     audio.currentTime = skipToTime;
 }
 
-// TRACK CLICKABLE DIVS
-
-for (const div of trackDivs) {
-    div.addEventListener("click", () => {
-        const trackSrc = div.dataset.src;
-        const selectedTrackIndex = div.dataset.index;
-        // If there's no music playing:
-        if (!audioIsPlaying) {
-            audio.src = trackSrc;
-            audio.load();
-            audio.play();
-            audioIsPlaying = true;
-            trackPlayingIndex = selectedTrackIndex;
-            removeAllActiveClass();
-            div.classList.add("active-track");
-            changePlayToPauseBtn();
-        } else {
-            // If there is music playing:
-            // Get the src of what is playing
-            const source = audio.src;
-            // Use 'includes' because src has full domain address
-            if (source.includes(trackSrc)) {
-                audio.pause();
-                audioIsPlaying = false;
-                changePauseToPlayBtn();
-            } else {
-                audio.src = trackSrc;
-                audio.load();
-                audio.play();
-                audioIsPlaying = true;
-                trackPlayingIndex = selectedTrackIndex;
-                removeAllActiveClass();
-                div.classList.add("active-track");
-                changePlayToPauseBtn();
-            }
-        }
-    });
-}
-
-// UI Player Buttons
-
-trackBackBtn.addEventListener("click", () => {
-    if (trackPlayingIndex > 0) {
-        return
-    }
-    const skipBackTrack = --trackPlayingIndex;
-    audio.src = trackList[skipBackTrack].src;
-    trackPlayingIndex = skipBackTrack;
-    audio.load();
-    audio.play();
-    audioIsPlaying = true;
-    removeAllActiveClass();
-    const currentTrack = document.querySelector(`div[data-index="${skipBackTrack}"]`);
-    currentTrack.classList.add("active-track");
-    if (!audioIsPlaying) {
-        changePlayToPauseBtn();
-    }
-})
-
-playBtn.addEventListener("click", () => {
-    if (audioIsPlaying) {
-        audio.pause();
-        changePauseToPlayBtn();
-        audioIsPlaying = false;
-    } else {
-        audio.play();
-        changePlayToPauseBtn();
-        audioIsPlaying = true;
-        const firstTrack = trackDivs[0];
-        firstTrack.classList.add("active-track");
-    }
-});
-
-trackForwardBtn.addEventListener("click", () => {
-    if (trackPlayingIndex == 6) {
-        return
-    }
-    if (!audioIsPlaying) {
-        changePlayToPauseBtn();
-    }
-    const skipForwardTrack = ++trackPlayingIndex;
-    audio.src = trackList[skipForwardTrack].src;
-    trackPlayingIndex = skipForwardTrack;
-    audio.load();
-    audio.play();
-    audioIsPlaying = true;
-    removeAllActiveClass();
-    const currentTrack = document.querySelector(`div[data-index="${skipForwardTrack}"]`);
-    currentTrack.classList.add("active-track");
-})
-
-// needed??:
-// audio.addEventListener("loadedmetadata", () => {
-//     if (audio.buffered) {
-//         alert("biffered");
-//     }
-//     updateTimeFields();
-// });
-
-function updateTimeFields() {
-    audio.addEventListener("timeupdate", () => {
-        displayTimeRemaining();
-        displayCurrentTime();
-        updateProgressSlider();
-    });
-}
-
-audio.addEventListener("durationchange", () => {
-    updateTimeFields();
-});
-
-trackPositionSlider.addEventListener("input", skipToSelectedTime);
-
-// ADDITIONAL FUNCTIONALITY
+// Extra functionality
 
 function autoPlayNextTrack() {
     if (trackPlayingIndex < trackList.length - 1) {
@@ -264,19 +244,45 @@ function autoPlayNextTrack() {
     }
 }
 
-audio.addEventListener("ended", autoPlayNextTrack)
-
-// Space bar to stop and start
-document.addEventListener("keydown", (event) => {
+function spaceBarToStopOrStart(event) {
     if (event.code === "Space" || event.key === " ") {
         if (!audioIsPlaying) {
+            checkIfTrackIsLoaded();
             audio.play();
             audioIsPlaying = true;
-            changePlayToPauseBtn();
+            updateUiToPlaying();
         } else {
-            audio.pause();
-            audioIsPlaying = false;
-            changePauseToPlayBtn();
+            pauseAudio();
+            updateUiToPaused();
         }
     }
+}
+
+// -- EVENT LISTENERS -
+
+playBtn.addEventListener("click", playBtnClickHandler);
+
+trackBackBtn.addEventListener("click", handleTrackBackClick);
+
+trackForwardBtn.addEventListener("click", handleTrackForwardClick);
+
+trackDivs.forEach((div) => {
+    div.addEventListener("click", () => {
+        const index = div.dataset.index;
+        trackDivClickHandler(index);
+    });
 });
+
+trackPositionSlider.addEventListener("input", skipToSelectedTime);
+
+// Prevent a 'NaN' value from being displayed
+audio.addEventListener("durationchange", updateTimeFields);
+
+audio.addEventListener("timeupdate", () => {
+    updateProgressSlider();
+    updateTimeFields();
+});
+
+document.addEventListener("keydown", spaceBarToStopOrStart);
+
+audio.addEventListener("ended", autoPlayNextTrack);
