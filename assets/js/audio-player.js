@@ -42,6 +42,7 @@ const trackList = [{
     },
 ]
 
+// GLOBAL CONSTANTS
 
 const playBtn = document.getElementById("track-play-btn");
 const trackListContainer = document.getElementById("track-list");
@@ -51,13 +52,17 @@ const trackForwardBtn = document.getElementById("track-forward-btn");
 const durationField = document.getElementById("duration-counter");
 const progressField = document.getElementById("progress-counter");
 
+// GLOBAL VARIABLES
+
 let audioIsPlaying = false;
 let trackPlayingIndex = 0;
 
 let audio = document.createElement("audio");
-// Load first track in array
+// Load first track in trackList array
 audio.src = trackList[0].src;
 audio.load();
+
+// PAGE SETUP
 
 function loadTrackInfo() {
     for (const track of trackList) {
@@ -71,17 +76,16 @@ function loadTrackInfo() {
     }
 }
 
-// Populate DOM with track info
 loadTrackInfo();
-
+// Get the newly rendered elements
 const trackDivs = Array.from(document.getElementsByClassName("track"));
 
 // -- UTILITY FUNCTIONS --
 
 function removeAllActiveClass() {
-    trackDivs.forEach(div => {
+    for (const div of trackDivs) {
         div.classList.remove("active-track");
-    })
+    }
 }
 
 function changePlayToPauseBtn() {
@@ -99,77 +103,6 @@ function formatSeconds(seconds) {
         return seconds;
     }
 }
-
-trackDivs.forEach(div => {
-    div.addEventListener("click", () => {
-        const trackSrc = div.dataset.src;
-        const selectedTrackIndex = div.dataset.index;
-        // If there's no music playing:
-        if (!audioIsPlaying) {
-            audio.src = trackSrc;
-            audio.load();
-            audio.play();
-            initVisualizer();
-            audioIsPlaying = true;
-            trackPlayingIndex = selectedTrackIndex;
-            removeAllActiveClass();
-            div.classList.add("active-track");
-            changePlayToPauseBtn();
-        } else {
-            // If there is music playing:
-            // Get the src of what is playing
-            const source = audio.src;
-            // Use 'includes' because src has full domain address
-            if (source.includes(trackSrc)) {
-                audio.pause();
-                audioIsPlaying = false;
-                changePauseToPlayBtn();
-            } else {
-                audio.src = trackSrc;
-                audio.load();
-                audio.play();
-                audioIsPlaying = true;
-                trackPlayingIndex = selectedTrackIndex;
-                removeAllActiveClass();
-                div.classList.add("active-track");
-                changePlayToPauseBtn();
-            }
-        }
-    });
-});
-
-playBtn.addEventListener("click", () => {
-    if (audioIsPlaying) {
-        audio.pause();
-        changePauseToPlayBtn();
-        audioIsPlaying = false;
-    } else {
-        audio.play();
-        initVisualizer();
-        changePlayToPauseBtn();
-        audioIsPlaying = true;
-        const firstTrack = trackDivs[0];
-        firstTrack.classList.add("active-track");
-    }
-});
-
-trackBackBtn.addEventListener("click", () => {
-    if (trackPlayingIndex > 0) {
-        return
-    }
-    const skipBackTrack = --trackPlayingIndex;
-    audio.src = trackList[skipBackTrack].src;
-    trackPlayingIndex = skipBackTrack;
-    audio.load();
-    audio.play();
-    audioIsPlaying = true;
-    removeAllActiveClass();
-    const currentTrack = document.querySelector(`div[data-index="${skipBackTrack}"]`);
-    currentTrack.classList.add("active-track");
-    if (!audioIsPlaying) {
-        changePlayToPauseBtn();
-    }
-})
 
 // Time display
 
@@ -203,7 +136,78 @@ function skipToSelectedTime() {
     audio.currentTime = skipToTime;
 }
 
+// TRACK CLICKABLE DIVS
+
+for (const div of trackDivs) {
+    div.addEventListener("click", () => {
+        const trackSrc = div.dataset.src;
+        const selectedTrackIndex = div.dataset.index;
+        // If there's no music playing:
+        if (!audioIsPlaying) {
+            audio.src = trackSrc;
+            audio.load();
+            audio.play();
+            audioIsPlaying = true;
+            trackPlayingIndex = selectedTrackIndex;
+            removeAllActiveClass();
+            div.classList.add("active-track");
+            changePlayToPauseBtn();
+        } else {
+            // If there is music playing:
+            // Get the src of what is playing
+            const source = audio.src;
+            // Use 'includes' because src has full domain address
+            if (source.includes(trackSrc)) {
+                audio.pause();
+                audioIsPlaying = false;
+                changePauseToPlayBtn();
+            } else {
+                audio.src = trackSrc;
+                audio.load();
+                audio.play();
+                audioIsPlaying = true;
+                trackPlayingIndex = selectedTrackIndex;
+                removeAllActiveClass();
+                div.classList.add("active-track");
+                changePlayToPauseBtn();
+            }
+        }
+    });
+}
+
 // UI Player Buttons
+
+trackBackBtn.addEventListener("click", () => {
+    if (trackPlayingIndex > 0) {
+        return
+    }
+    const skipBackTrack = --trackPlayingIndex;
+    audio.src = trackList[skipBackTrack].src;
+    trackPlayingIndex = skipBackTrack;
+    audio.load();
+    audio.play();
+    audioIsPlaying = true;
+    removeAllActiveClass();
+    const currentTrack = document.querySelector(`div[data-index="${skipBackTrack}"]`);
+    currentTrack.classList.add("active-track");
+    if (!audioIsPlaying) {
+        changePlayToPauseBtn();
+    }
+})
+
+playBtn.addEventListener("click", () => {
+    if (audioIsPlaying) {
+        audio.pause();
+        changePauseToPlayBtn();
+        audioIsPlaying = false;
+    } else {
+        audio.play();
+        changePlayToPauseBtn();
+        audioIsPlaying = true;
+        const firstTrack = trackDivs[0];
+        firstTrack.classList.add("active-track");
+    }
+});
 
 trackForwardBtn.addEventListener("click", () => {
     if (trackPlayingIndex == 6) {
@@ -221,13 +225,15 @@ trackForwardBtn.addEventListener("click", () => {
     removeAllActiveClass();
     const currentTrack = document.querySelector(`div[data-index="${skipForwardTrack}"]`);
     currentTrack.classList.add("active-track");
-
 })
 
 // needed??:
-audio.addEventListener("loadedmetadata", () => {
-    updateTimeFields();
-});
+// audio.addEventListener("loadedmetadata", () => {
+//     if (audio.buffered) {
+//         alert("biffered");
+//     }
+//     updateTimeFields();
+// });
 
 function updateTimeFields() {
     audio.addEventListener("timeupdate", () => {
@@ -237,7 +243,13 @@ function updateTimeFields() {
     });
 }
 
+audio.addEventListener("durationchange", () => {
+    updateTimeFields();
+});
+
 trackPositionSlider.addEventListener("input", skipToSelectedTime);
+
+// ADDITIONAL FUNCTIONALITY
 
 function autoPlayNextTrack() {
     if (trackPlayingIndex < trackList.length - 1) {
@@ -257,14 +269,14 @@ audio.addEventListener("ended", autoPlayNextTrack)
 // Space bar to stop and start
 document.addEventListener("keydown", (event) => {
     if (event.code === "Space" || event.key === " ") {
-      if (!audioIsPlaying) {
-        audio.play();
-        audioIsPlaying = true;
-        changePlayToPauseBtn();
-      } else {
-        audio.pause();
-        audioIsPlaying = false;
-        changePauseToPlayBtn();
-      }
+        if (!audioIsPlaying) {
+            audio.play();
+            audioIsPlaying = true;
+            changePlayToPauseBtn();
+        } else {
+            audio.pause();
+            audioIsPlaying = false;
+            changePauseToPlayBtn();
+        }
     }
-  });
+});
